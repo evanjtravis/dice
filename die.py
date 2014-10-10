@@ -29,13 +29,6 @@ DEF_ROLLS_LENGTH = 20
 # TODO given a set of dice, produce list of possible rolls and their
 # probability.
 # TODO initialize DICE from config
-# TODO module level roll function to call one off basic rolls calling
-# dice.roll('d6')
-# TODO update roll method to take int argument for number of times to
-# roll, and a string argument for a basic die roll counterpart.
-# TODO Roll object to encapsulate status, current_roll, and previous_roll,
-# created and stored in rolls list in Dice, not to exceed length of 20,
-# also keeps track of base die roll.
 def roll_set(dice_set):
     """Roll a given dice set and return the results in a dictionary.
     The Dice object is the key, the value is a tuple of the roll and
