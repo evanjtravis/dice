@@ -1,10 +1,10 @@
 #!/usr/bin/env python
-"""
+"""A simple Goal module to work with die and roll.
 """
 DEF_VALUE = 1
 DEF_ABOVE = True
 
-class Goal():
+class Goal(object):
     """This class encapsulates information about the goal associated with
     a die roll.
     """
@@ -15,7 +15,7 @@ class Goal():
         """
         self.value = value
         self.above = above
-        
+
         self.__check_vars()
 
     def __check_vars(self):

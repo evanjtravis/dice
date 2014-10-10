@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 """A simple dice module.
 """
-from ConfigParser import ConfigParser
+# from ConfigParser import ConfigParser
 from random import randint, seed
+from roll import Roll
 
 seed()
 
@@ -15,6 +16,7 @@ DEF_NAME = 'NA'
 DEF_MOD = 0
 CRITICAL_FAIL = 1
 DEF_MAX = CRITICAL_FAIL + 1
+DEF_ROLLS_LENGTH = 20
 ############################################################################
 # Exceptions
 ############################################################################
@@ -24,11 +26,16 @@ DEF_MAX = CRITICAL_FAIL + 1
 ############################################################################
 # Functions
 ############################################################################
-#TODO given a set of dice, produce list of possible rolls and their probability.
-#TODO initialize DICE from config
-#TODO module level roll function to call one off basic rolls calling dice.roll('d6')
-# TODO update roll method to take int argument for number of times to roll, and a string argument for a basic die roll counterpart.
-# TODO Roll object to encapsulate status, current_roll, and previous_roll, created and stored in rolls list in Dice, not to exceed length of 20, also keeps track of base die roll.
+# TODO given a set of dice, produce list of possible rolls and their
+# probability.
+# TODO initialize DICE from config
+# TODO module level roll function to call one off basic rolls calling
+# dice.roll('d6')
+# TODO update roll method to take int argument for number of times to
+# roll, and a string argument for a basic die roll counterpart.
+# TODO Roll object to encapsulate status, current_roll, and previous_roll,
+# created and stored in rolls list in Dice, not to exceed length of 20,
+# also keeps track of base die roll.
 def roll_set(dice_set):
     """Roll a given dice set and return the results in a dictionary.
     The Dice object is the key, the value is a tuple of the roll and
@@ -55,24 +62,25 @@ def remove(dice_obj):
 # Classes
 ############################################################################
 
-class Dice():
+class Die(object):
     """This class specifies dice used in games.
     """
-    
-    def __init__(self,
-            max_roll, name=DEF_NAME, offset=DEF_OFFSET, mod=DEF_MOD):
+    def __init__(
+            self,
+            max_roll,
+            name=DEF_NAME,
+            offset=DEF_OFFSET,
+            mod=DEF_MOD):
         """Dice have a max roll, an offset, and a name.
         """
         self.max_roll = max_roll
         self.offset = offset
         self.name = name
         self.mod = mod
-        self.__current_roll = None
-        self.__previous_roll = None
-        self.__critical = None
+        self.__rolls = []
 
         self.__check_vars()
-        
+
         DICE.append(self)
 
     def __str__(self):
@@ -87,94 +95,45 @@ class Dice():
             message += '%d, ' % self.offset
         if self.mod != 0:
             message += 'mod: %d, ' % self.mod
-        if self.__current_roll:
-            message += 'Cur: %d, ' % self.__current_roll
-        if self.__previous_roll:
-            message += 'Prev: %d' % self.__previous_roll
         return message
 
     ########################################################################
     # Public Methods
     ########################################################################
-# TODO CHANGE TO REFLECT USE OF GOAL AND ROLL CLASSES
-    def get_current_roll(self):
-        """Returns the value of the current roll.
+    def roll(self, count=1, goal=None):
+        """Appends a roll to the dice's rolls list.
         """
-        return self.__current_roll
+        self.__check_vars()
+        for i in range(count):
+            value = randint(
+                self.offset + 1,
+                self.max_roll + self.offset
+            )
+            self.__rolls.insert(0, Roll(self, value, goal=goal))
 
-    def get_previous_roll(self):
-        """Returns the value of the previous roll.
+    def get_rolls(self):
+        """Returns the list of rolls for the dice.
         """
-        return self.__previous_roll
-
-    def get_critical(self):
-        """Returns the value of is_critical
-        """
-        return self.__critical
-    
-    def is_critical_fail(self):
-        """Returns true if the die rolls a critical fail.
-        """
-        return self.__critical == False
-
-    def is_critical_success(self):
-        """Returns true if the die rolls a critical success.
-        """
-        return self.__critical == True
-
-    def roll(self, count=1, co_roll=None):
-        """Returns a random roll from the dice along with its modifier.
-        Updates current and previous rolls.
-        """
-        self.__step()
-        if count > 0:
-            if count == 1:
-                value = randint(
-                    self.offset + 1,
-                    self.max_roll + self.offset
-                )
-                self.__current_roll = value
-        
-                if value - self.offset <= CRITICAL_FAIL:
-                    self.__set_critical_failure()
-                    value = CRITICAL_FAIL
-                elif value - self.offset == self.max_roll:
-                    self.__set_critical_success()
-                
-                return [(value, self.mod)]
-            else:
-                results = []
-                for i in range(count):
-                    results.append(self.roll(additional=additional))
-                return results
-        else:
-            return []
-
+        return self.__rolls
     ########################################################################
     # Private Methods
     ########################################################################
 
-    def __step(self):
-        """Perform actions associated with moving from one roll to the next.
-        """
-        self.__check_vars()
-        self.__clear_critical_status()
-        self.__previous_roll = self.__current_roll
- 
     def __check_vars(self):
-        """
+        """Maintain the validity of Dice variables.
         """
         self.__check_max_roll()
         self.__check_offset()
         self.__check_name()
         self.__check_modifier()
+        self.__check_rolls()
 
     def __check_max_roll(self):
         """Make sure that any changes made to max_roll are valid.
         """
         try:
             self.max_roll = int(self.max_roll)
-        except Exception:
+        except ValueError:
             self.max_roll = DEF_MAX
         if self.max_roll <= CRITICAL_FAIL:
             self.max_roll = DEF_MAX
@@ -185,7 +144,7 @@ class Dice():
         """
         try:
             self.offset = int(self.offset)
-        except Exception:
+        except ValueError:
             self.offset = DEF_OFFSET
         if self.offset <= -1:
             self.offset = DEF_OFFSET
@@ -200,7 +159,7 @@ class Dice():
             self.name = DEF_NAME
         try:
             self.name = str(self.name)
-        except Exception:
+        except ValueError:
             self.name = DEF_NAME
 
     def __check_modifier(self):
@@ -209,5 +168,10 @@ class Dice():
         """
         try:
             self.mod = int(self.mod)
-        except Exception:
+        except ValueError:
             self.mod = DEF_MOD
+
+    def __check_rolls(self):
+        """Dice's rolls list length shouldn't exceed DEF_ROLLS_LENGTH
+        """
+        self.__rolls = self.__rolls[:DEF_ROLLS_LENGTH]

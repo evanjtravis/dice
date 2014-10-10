@@ -4,48 +4,38 @@
 from goal import Goal
 
 DEF_GOAL = Goal()
-SUCCESS = 'Success'
-CRIT_SUCCESS = 'Critical ' + SUCCESS
-FAIL = 'Failure'
-CRIT_FAIL = 'Critical ' + FAIL
 
-class Roll():
+class Roll(object):
     """This class encapsulates information about each roll of a certain die.
     """
-    #TODO somehow indicate tha success/failure is achieved by going ABOVE goal or going BELOW goal. TRUE or FALSE
-    # TODO goal is a class, 
-#TODO all editable globals in config file
-    def __init__(self, dice, value, goal=None)
-        """
+    def __init__(self, dice, value, goal=None):
+        """A Roll has an associated dice, a value, and a possible goal.
         """
         self.dice = dice
         self.value = value
         self.goal = goal
-        self.above = above
         self.roll_number = self.value - self.dice.offset
 
         self.__check_vars()
 
-        self.status = self.__set_status()
+        self.status = self.is_successful()
 
-    def __set_status(self):
-        """Get the status of the roll.
-        Statuses:
-            Success: value meets or exceeds the goal
-            Fail: value fails to meet the goal
-            Critical Fail: value = lowest possible roll
-            Critical Success: value = highest possible roll
+    def is_successful(self):
+        """Returns true if the value of the roll meets or exceeds the goal.
         """
-        if self.__is_successful():
-            if self.roll_number == self.dice.max_roll:
-                return CRIT_SUCCESS
-            else:
-                return SUCCESS
+        self.__check_vars()
+        successful = False
+
+        if self.goal == None:
+            return None
         else:
-            if self.roll_number == 1:
-                return CRIT_FAIL
+            if self.goal.above == True:
+                if self.roll_number >= self.goal.value:
+                    successful = True
             else:
-                return FAIL
+                if self.roll_number <= self.goal.value:
+                    successful = True
+        return successful
 
     def __check_vars(self):
         """Make sure that object variables are valid, otherwise, they are
@@ -65,28 +55,3 @@ class Roll():
             except ValueError:
                 self.goal = DEF_GOAL
             self.goal = Goal(value=self.goal)
-
-    def __is_successful(self):
-        """Returns true if the value of the roll meets or exceeds the goal.
-        """
-        self.__check_vars()
-        successful = False
-        
-        if self.goal == None:
-            return None
-        else:
-            if self.goal.above == True:
-                if self.roll_number >= self.goal.value:
-                    successful = True
-            else:
-                if self.roll_number <= self.goal.value:
-                    successful = True
-        return successful
-
-    def __is_failed(self):
-        """Returns true if the value of the roll does NOT meet or exceed
-        the goal.
-        """
-        if self.goal == None:
-            return None
-        return not self.__is_successful
