@@ -62,5 +62,20 @@ class TestDiceClass(TestCase):
         d = die.Die(2, name=None)
         self.assertEqual(d.name, die.DEF_NAME)
 
+    def test_die_roll(self):
+        """When rolled, the roll should be appended to the __rolls list.
+        """
+        pass
+
+    def test_die_rolls_list(self):
+        """The die __rolls list should never exceed the DEF_ROLLS_LENGTH.
+        """
+        pass
+
+    def test_get_rolls(self):
+        """The get_rolls() class method should return the __rolls list.
+        """
+        pass
+
 if __name__ == '__main__':
     unittest.main()

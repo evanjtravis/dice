@@ -18,7 +18,7 @@ class Goal(object):
 
         self.__check_vars()
 
-    def __check_vars(self):
+    def check_vars(self):
         """Make sure that object variables are valid, otherwise, they are
         reset to default values.
         """
@@ -41,4 +41,4 @@ class Goal(object):
         """
         possible = [True, False]
         if self.above not in possible:
-            self.above = True
+            self.above = DEF_ABOVE

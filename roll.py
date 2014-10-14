@@ -3,27 +3,26 @@
 """
 from goal import Goal
 
-DEF_GOAL = Goal()
-
 class Roll(object):
     """This class encapsulates information about each roll of a certain die.
     """
-    def __init__(self, dice, value, goal=None):
+    def __init__(self, dice, value, goal=None, result=None):
         """A Roll has an associated dice, a value, and a possible goal.
         """
         self.dice = dice
         self.value = value
         self.goal = goal
         self.roll_number = self.value - self.dice.offset
+        self.result = result
 
-        self.__check_vars()
+        self.check_vars()
 
         self.status = self.is_successful()
 
     def is_successful(self):
         """Returns true if the value of the roll meets or exceeds the goal.
         """
-        self.__check_vars()
+        self.check_vars()
         successful = False
 
         if self.goal == None:
@@ -37,7 +36,7 @@ class Roll(object):
                     successful = True
         return successful
 
-    def __check_vars(self):
+    def check_vars(self):
         """Make sure that object variables are valid, otherwise, they are
         set to default values.
         """
@@ -50,8 +49,4 @@ class Roll(object):
         if isinstance(self.goal, Goal):
             return
         else:
-            try:
-                self.goal = int(self.goal)
-            except ValueError:
-                self.goal = DEF_GOAL
-            self.goal = Goal(value=self.goal)
+            self.goal = Goal(self.goal)

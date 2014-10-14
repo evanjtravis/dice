@@ -1,0 +1,24 @@
+# Template
+# [Dice Name]   --> Required
+# max: int      --> Required
+# offset: int   --> Optional
+# mod: int      --> Optional
+
+[Action]
+max: 20
+
+[Attack]
+max: 6
+offset: 2
+mod: 2
+
+[Defend]
+max: 12
+
+[Luck]
+max: 100
+mod: 15
+
+[Repel]
+max: 27
+mod: 5
