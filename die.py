@@ -3,8 +3,8 @@
 """
 # from ConfigParser import ConfigParser
 from goal import Goal
-from random import randint, seed
 from roll import Roll
+from random import randint, seed
 import itertools
 import types
 
@@ -24,11 +24,26 @@ DEF_ROLLS_LENGTH = 20
 # Exceptions
 ############################################################################
 
+class InvalidDieFunction(Exception):
+    """Raised when a function assigned to a Die is invalid.
+    """
+
+    def __init__(self, message):
+        """Initialize.
+        """
+        super(InvalidDieFunction, self).__init__()
+        self.message = message
+
+    def __str__(self):
+        """Print.
+        """
+        return repr(self.message)
 
 
 ############################################################################
 # Functions
 ############################################################################
+# TODO relative imports work, but not absolute ones
 # TODO initialize DICE from config
 # TODO remove from DICE based on class variables
 # TODO limit list size of get_probability, limit size of dice
@@ -39,6 +54,8 @@ DEF_ROLLS_LENGTH = 20
 # TODO dice_utils module
 # TODO store func result in Roll object???
 # TODO dice_set object? Expand list functionality?
+# TODO Die.add_funcs --> more than one function in __func variable
+# TODO Die.set_funcs --> clears automatically
 
 def get_most_likely_roll(dice_set=DICE):
     """Given a set of dice, returns the value(s) that have the highest
@@ -168,7 +185,7 @@ class Die(object):
         if goal == None and self.__goal != None:
             goal = self.__goal
 
-        for i in range(count):
+        for _ in range(count):
             value = randint(
                 self.offset + 1,
                 self.max_roll + self.offset + 1
@@ -299,6 +316,7 @@ class Die(object):
             try:
                 temp = self.__func(1)
             except ValueError:
-                raise Exception(message % self.__func)
+                del temp
+                raise InvalidDieFunction(message % self.__func)
         else:
             self.__func = None

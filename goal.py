@@ -3,7 +3,9 @@
 """
 DEF_VALUE = 1
 DEF_ABOVE = True
-
+# TODO roll can be successful/failed if it lands ON a number
+# TODO roll can be successful/failed if it lands ON a number that is in a
+# passed list. Change 'above' characteristic.
 class Goal(object):
     """This class encapsulates information about the goal associated with
     a die roll.
@@ -16,7 +18,7 @@ class Goal(object):
         self.value = value
         self.above = above
 
-        self.__check_vars()
+        self.check_vars()
 
     def check_vars(self):
         """Make sure that object variables are valid, otherwise, they are
