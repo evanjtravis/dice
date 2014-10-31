@@ -56,6 +56,15 @@ class InvalidDieFunction(Exception):
 # TODO dice_set object? Expand list functionality?
 # TODO Die.add_funcs --> more than one function in __func variable
 # TODO Die.set_funcs --> clears automatically
+# TODO Die constructor optional argument. Provide list of values that will
+# not be rolled. Should be verified to fit in range of 1 and max_roll,
+# offset would be taken into acount during rolls. Additional optional
+# argument to supplement die roll list --> list allows for more than one
+# appearance of any given number.
+# TODO roll, instead of using randint, instead returns a random number from
+# a list of possible rolls determined by max_roll, offset, and the
+# exclusive/inclusive numbers list.
+
 
 def get_most_likely_roll(dice_set=DICE):
     """Given a set of dice, returns the value(s) that have the highest
